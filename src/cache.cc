@@ -423,6 +423,16 @@ int CACHE::invalidate_entry(uint64_t inval_addr)
   return way;
 }
 
+void CACHE::change_num_set(uint32_t sets) {
+    NUM_SET = sets;
+    block.resize(NUM_SET * NUM_WAY);
+}
+
+void CACHE::change_num_way(uint32_t way) {
+    NUM_WAY = way;
+    block.resize(NUM_SET * NUM_WAY);
+}
+
 int CACHE::add_rq(PACKET* packet)
 {
   assert(packet->address != 0);

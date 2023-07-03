@@ -38,7 +38,8 @@ class CACHE : public champsim::operable, public MemoryRequestConsumer, public Me
 public:
   uint32_t cpu;
   const std::string NAME;
-  const uint32_t NUM_SET, NUM_WAY, WQ_SIZE, RQ_SIZE, PQ_SIZE, MSHR_SIZE;
+  uint32_t NUM_SET, NUM_WAY;
+  const uint32_t WQ_SIZE, RQ_SIZE, PQ_SIZE, MSHR_SIZE;
   const uint32_t HIT_LATENCY, FILL_LATENCY, OFFSET_BITS;
   std::vector<BLOCK> block{NUM_SET * NUM_WAY};
   const uint32_t MAX_READ, MAX_WRITE;
@@ -67,6 +68,9 @@ public:
            WQ_FULL = 0, WQ_FORWARD = 0, WQ_TO_CACHE = 0;
 
   uint64_t total_miss_latency = 0;
+
+  void change_num_set(uint32_t sets);
+  void change_num_way(uint32_t way);
 
   // functions
   int add_rq(PACKET* packet) override;

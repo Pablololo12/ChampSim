@@ -333,6 +333,11 @@ int main(int argc, char** argv)
   // initialize knobs
   uint8_t show_heartbeat = 1;
 
+  int dcache_sets = 0;
+  int dcache_ways = 0;
+  int icache_sets = 0;
+  int icache_ways = 0;
+
   // check to see if knobs changed using getopt_long()
   int traces_encountered = 0;
   static struct option long_options[] = {{"warmup_instructions", required_argument, 0, 'w'},
@@ -340,6 +345,10 @@ int main(int argc, char** argv)
                                          {"hide_heartbeat", no_argument, 0, 'h'},
                                          {"cloudsuite", no_argument, 0, 'c'},
                                          {"traces", no_argument, &traces_encountered, 1},
+                                         {"dcache_sets", required_argument, nullptr, 1},
+                                         {"dcache_ways", required_argument, nullptr, 2},
+                                         {"icache_sets", required_argument, nullptr, 3},
+                                         {"icache_ways", required_argument, nullptr, 4},
                                          {0, 0, 0, 0}};
 
   int c;
@@ -359,6 +368,18 @@ int main(int argc, char** argv)
       MAX_INSTR_DESTINATIONS = NUM_INSTR_DESTINATIONS_SPARC;
       break;
     case 0:
+      break;
+    case 1:
+      dcache_sets = atol(optarg);
+      break;
+    case 2:
+      dcache_ways = atol(optarg);
+      break;
+    case 3:
+      icache_sets = atol(optarg);
+      break;
+    case 4:
+      icache_ways = atol(optarg);
       break;
     default:
       abort();
@@ -408,6 +429,26 @@ int main(int argc, char** argv)
   for (auto it = caches.rbegin(); it != caches.rend(); ++it) {
     (*it)->impl_prefetcher_initialize();
     (*it)->impl_replacement_initialize();
+  }
+
+  if (dcache_sets != 0) {
+      std::cout << "Changing dcache sets to: " << dcache_sets << endl;
+      caches.at(3)->change_num_set(static_cast<uint32_t>(dcache_sets));
+  }
+
+  if (dcache_ways != 0) {
+      std::cout << "Changing dcache ways to: " << dcache_ways << endl;
+      caches.at(3)->change_num_way(static_cast<uint32_t>(dcache_ways));
+  }
+
+  if (icache_sets != 0) {
+      std::cout << "Changing icache sets to: " << icache_sets << endl;
+      caches.at(6)->change_num_set(static_cast<uint32_t>(icache_sets));
+  }
+
+  if (icache_ways != 0) {
+      std::cout << "Changing icache ways to: " << icache_ways << endl;
+      caches.at(6)->change_num_way(static_cast<uint32_t>(icache_ways));
   }
 
   // simulation entry point
